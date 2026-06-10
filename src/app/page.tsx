@@ -61,6 +61,7 @@ export default function Home() {
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [appointments, setAppointments] = useState<any[]>([]);
+  const [isGoogleChooserActive, setIsGoogleChooserActive] = useState(false);
 
   // FAQ Accordion State
   const [expandedFaqId, setExpandedFaqId] = useState<number | null>(null);
@@ -150,6 +151,60 @@ export default function Home() {
   const handleCloseAuth = () => {
     setIsAuthOpen(false);
     setAuthError(null);
+    setIsGoogleChooserActive(false);
+  };
+
+  const handleGoogleSelect = async (name: string, email: string) => {
+    setAuthLoading(true);
+    setAuthError(null);
+
+    try {
+      const res = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setAuthError(data.error || 'Google authentication failed.');
+        setAuthLoading(false);
+        setIsGoogleChooserActive(false);
+        return;
+      }
+
+      const sessionUser = { email: data.user.email, name: data.user.name };
+      setCurrentUser(sessionUser);
+      sessionStorage.setItem('userSession', JSON.stringify(sessionUser));
+      setIsGoogleChooserActive(false);
+      setIsAuthOpen(false);
+    } catch (err) {
+      console.error('Google auth error:', err);
+      setAuthError('An unexpected error occurred during Google sign in.');
+      setIsGoogleChooserActive(false);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleGoogleUseOther = () => {
+    const email = prompt('Enter your Google email address:');
+    if (!email) return;
+
+    if (!email.includes('@') || !email.includes('.')) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    const prefix = email.split('@')[0];
+    const name = prefix
+      .split(/[^a-zA-Z]/)
+      .filter(Boolean)
+      .map(word => word[0].toUpperCase() + word.slice(1))
+      .join(' ') || 'Google User';
+
+    handleGoogleSelect(name, email);
   };
 
   const handleAuthSubmit = async (e: React.FormEvent) => {
@@ -471,79 +526,156 @@ export default function Home() {
           <div className={styles.modalContent}>
             <button onClick={handleCloseAuth} className={styles.closeBtn}>×</button>
 
-            <div className={styles.authTabs}>
-              <button
-                onClick={() => { setAuthMode('signin'); setAuthError(null); }}
-                className={`${styles.authTabButton} ${authMode === 'signin' ? styles.activeAuthTabButton : ''}`}
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => { setAuthMode('signup'); setAuthError(null); }}
-                className={`${styles.authTabButton} ${authMode === 'signup' ? styles.activeAuthTabButton : ''}`}
-              >
-                Sign Up
-              </button>
-            </div>
+            {isGoogleChooserActive ? (
+              <div className={styles.googleChooser}>
+                <h3>Choose an account</h3>
+                <p>to continue to Aegis Health</p>
 
-            {authError && (
-              <div className={styles.authErrorMsg} role="alert">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px', verticalAlign: 'middle', display: 'inline-block', flexShrink: 0 }}>
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="8" x2="12" y2="12" />
-                  <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
-                <span>{authError}</span>
-              </div>
-            )}
+                <div className={styles.googleAccountList}>
+                  <button
+                    onClick={() => handleGoogleSelect('Sacheet Kumar', 'sacheetkumar001@gmail.com')}
+                    className={styles.googleAccountItem}
+                  >
+                    <div className={styles.googleAvatar}>S</div>
+                    <div className={styles.googleAccountDetails}>
+                      <span className={styles.googleAccountName}>Sacheet Kumar</span>
+                      <span className={styles.googleAccountEmail}>sacheetkumar001@gmail.com</span>
+                    </div>
+                  </button>
 
-            <form onSubmit={handleAuthSubmit} className={styles.authForm}>
-              {authMode === 'signup' && (
-                <div className={styles.inputGroup}>
-                  <label htmlFor="authName">Full Name</label>
-                  <input
-                    id="authName"
-                    type="text"
-                    placeholder="John Doe"
-                    required
-                    value={nameInput}
-                    onChange={(e) => setNameInput(e.target.value)}
-                  />
+                  <button
+                    onClick={() => handleGoogleSelect('Guest User', 'guest.aegis@gmail.com')}
+                    className={styles.googleAccountItem}
+                  >
+                    <div className={styles.googleAvatar}>G</div>
+                    <div className={styles.googleAccountDetails}>
+                      <span className={styles.googleAccountName}>Guest User</span>
+                      <span className={styles.googleAccountEmail}>guest.aegis@gmail.com</span>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={handleGoogleUseOther}
+                    className={styles.googleAccountItem}
+                  >
+                    <div className={styles.googleAvatar}>+</div>
+                    <div className={styles.googleAccountDetails}>
+                      <span className={styles.googleAccountName}>Use another account</span>
+                    </div>
+                  </button>
                 </div>
-              )}
 
-              <div className={styles.inputGroup}>
-                <label htmlFor="authEmail">Email Address</label>
-                <input
-                  id="authEmail"
-                  type="email"
-                  placeholder="name@example.com"
-                  required
-                  value={emailInput}
-                  onChange={(e) => setEmailInput(e.target.value)}
-                />
+                <button onClick={() => setIsGoogleChooserActive(false)} className={styles.googleCancelBtn}>
+                  Back to Form
+                </button>
               </div>
+            ) : (
+              <>
+                <div className={styles.authTabs}>
+                  <button
+                    onClick={() => { setAuthMode('signin'); setAuthError(null); }}
+                    className={`${styles.authTabButton} ${authMode === 'signin' ? styles.activeAuthTabButton : ''}`}
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => { setAuthMode('signup'); setAuthError(null); }}
+                    className={`${styles.authTabButton} ${authMode === 'signup' ? styles.activeAuthTabButton : ''}`}
+                  >
+                    Sign Up
+                  </button>
+                </div>
 
-              <div className={styles.inputGroup}>
-                <label htmlFor="authPassword">Password</label>
-                <input
-                  id="authPassword"
-                  type="password"
-                  placeholder="••••••••"
-                  required
-                  value={passwordInput}
-                  onChange={(e) => setPasswordInput(e.target.value)}
-                />
-              </div>
+                {authError && (
+                  <div className={styles.authErrorMsg} role="alert">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px', verticalAlign: 'middle', display: 'inline-block', flexShrink: 0 }}>
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="12" y1="8" x2="12" y2="12" />
+                      <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                    <span>{authError}</span>
+                  </div>
+                )}
 
-              <button
-                type="submit"
-                disabled={authLoading}
-                className={styles.authSubmitBtn}
-              >
-                {authLoading ? 'Verifying Account...' : (authMode === 'signin' ? 'Sign In' : 'Create Account')}
-              </button>
-            </form>
+                <form onSubmit={handleAuthSubmit} className={styles.authForm}>
+                  {authMode === 'signup' && (
+                    <div className={styles.inputGroup}>
+                      <label htmlFor="authName">Full Name</label>
+                      <input
+                        id="authName"
+                        type="text"
+                        placeholder="John Doe"
+                        required
+                        value={nameInput}
+                        onChange={(e) => setNameInput(e.target.value)}
+                      />
+                    </div>
+                  )}
+
+                  <div className={styles.inputGroup}>
+                    <label htmlFor="authEmail">Email Address</label>
+                    <input
+                      id="authEmail"
+                      type="email"
+                      placeholder="name@example.com"
+                      required
+                      value={emailInput}
+                      onChange={(e) => setEmailInput(e.target.value)}
+                    />
+                  </div>
+
+                  <div className={styles.inputGroup}>
+                    <label htmlFor="authPassword">Password</label>
+                    <input
+                      id="authPassword"
+                      type="password"
+                      placeholder="••••••••"
+                      required
+                      value={passwordInput}
+                      onChange={(e) => setPasswordInput(e.target.value)}
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={authLoading}
+                    className={styles.authSubmitBtn}
+                  >
+                    {authLoading ? 'Verifying Account...' : (authMode === 'signin' ? 'Sign In' : 'Create Account')}
+                  </button>
+
+                  <div className={styles.divider}>
+                    <span>or</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsGoogleChooserActive(true)}
+                    className={styles.googleAuthBtn}
+                  >
+                    <svg className={styles.googleIcon} width="16" height="16" viewBox="0 0 24 24">
+                      <path
+                        fill="#4285F4"
+                        d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.69c-.29 1.5-1.14 2.78-2.4 3.62v3.02h3.87c2.26-2.08 3.58-5.14 3.58-8.49z"
+                      />
+                      <path
+                        fill="#34A853"
+                        d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.87-3.02c-1.08.72-2.45 1.16-4.06 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.12C3.26 20.22 7.37 24 12 24z"
+                      />
+                      <path
+                        fill="#FBBC05"
+                        d="M5.27 14.27c-.24-.72-.38-1.5-.38-2.27s.14-1.55.38-2.27V6.61H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.39l3.98-3.12z"
+                      />
+                      <path
+                        fill="#EA4335"
+                        d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.37 0 3.26 3.78 1.29 7.61l3.98 3.12c.95-2.85 3.6-4.98 6.73-4.98z"
+                      />
+                    </svg>
+                    <span>{authMode === 'signin' ? 'Sign in with Google' : 'Sign up with Google'}</span>
+                  </button>
+                </form>
+              </>
+            )}
           </div>
         </div>
       )}
