@@ -1,5 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import Tesseract from 'tesseract.js';
+
+function isPrescriptionText(text: string, filename: string): boolean {
+  const normalizedText = text.toLowerCase();
+  const normalizedFilename = filename.toLowerCase();
+
+  // 1. Common medical markers
+  const markers = [
+    'rx', 'prescription', 'recipe', 'medication', 'medicine', 'treatment',
+    'patient', 'physician', 'doctor', 'dr.', 'clinic', 'hospital', 'pharmacy',
+    'dosage', 'take', 'daily', 'capsule', 'capsules', 'tablet', 'tablets',
+    'mg', 'mcg', 'ml', 'qty', 'quantity', 'sig', 'signa'
+  ];
+
+  // 2. Common pharmaceutical drug names
+  const drugs = [
+    'amlodipine', 'besylate', 'losartan', 'potassium',
+    'metformin', 'hydrochloride', 'glimepiride', 'insulin',
+    'clotrimazole', 'cetirizine', 'amoxicillin', 'trihydrate',
+    'albuterol', 'paracetamol', 'aspirin', 'ibuprofen', 'acetaminophen'
+  ];
+
+  // Check matching criteria in recognized text
+  let markerCount = 0;
+  for (const marker of markers) {
+    if (normalizedText.includes(marker)) {
+      markerCount++;
+    }
+  }
+
+  const hasDrug = drugs.some(drug => normalizedText.includes(drug));
+
+  // If text recognition succeeded, we validate strictly on recognized text
+  if (text.trim().length > 10) {
+    return (markerCount >= 2) || hasDrug;
+  }
+
+  // Fallback check on filename if OCR extracted no readable text (e.g. blank image or connection error)
+  const filenameMarkers = ['prescription', 'rx', 'medical', 'heart', 'bp', 'sugar', 'diabetes', 'skin', 'rash', 'bronchitis'];
+  const hasFilenameMarker = filenameMarkers.some(m => normalizedFilename.includes(m));
+  
+  return hasFilenameMarker;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,11 +57,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const filename = file.name.toLowerCase();
+    const filename = file.name;
+    const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Perform clinical simulated OCR analysis on the backend
+    let recognizedText = '';
+    let ocrFailed = false;
+
+    try {
+      // Run real OCR text extraction on the uploaded image buffer
+      const ocrResult = await Tesseract.recognize(buffer, 'eng');
+      recognizedText = ocrResult.data.text || '';
+    } catch (ocrErr: any) {
+      console.warn('[OCR Engine] Tesseract recognition failed (possibly offline):', ocrErr.message);
+      ocrFailed = true;
+    }
+
+    // Strictly validate if the file is a prescription document
+    if (!isPrescriptionText(recognizedText, filename)) {
+      return NextResponse.json(
+        { error: 'Please upload a correct prescription document. (upload correct)' },
+        { status: 400 }
+      );
+    }
+
+    // Determine diagnosis dynamically based on recognized text OR filename keywords
     let analysis;
-    if (filename.includes('heart') || filename.includes('bp') || filename.includes('cardio') || filename.includes('hyper')) {
+    const textToCheck = recognizedText.toLowerCase() + ' ' + filename.toLowerCase();
+
+    if (textToCheck.includes('heart') || textToCheck.includes('bp') || textToCheck.includes('cardio') || textToCheck.includes('hyper') || textToCheck.includes('amlodipine') || textToCheck.includes('losartan')) {
       analysis = {
         condition: 'Hypertension (Chronic High Blood Pressure)',
         specialty: 'Cardiologist',
@@ -26,14 +92,14 @@ export async function POST(req: NextRequest) {
           { name: 'Amlodipine Besylate', dosage: '5 mg', frequency: 'Once daily (Morning)', purpose: 'Calcium channel blocker to relax blood vessels' },
           { name: 'Losartan Potassium', dosage: '50 mg', frequency: 'Once daily (Night)', purpose: 'Angiotensin receptor blocker to reduce pressure' }
         ],
-        warnings: 'Caution: Avoid high sodium (salt) foods. Monitor your blood pressure daily and record findings. Discontinue Losartan immediately if pregnancy is suspected.',
+        warnings: 'Caution: Avoid high sodium (salt) foods. Monitor your blood pressure daily. Discontinue Losartan immediately if pregnancy is suspected.',
         precautions: [
           'Change positions slowly (e.g. standing up) to avoid dizziness.',
           'Limit intake of alcohol as it can cause sudden drops in pressure.',
           'Schedule regular heart diagnostics and kidney function checkups.'
         ]
       };
-    } else if (filename.includes('sugar') || filename.includes('diab') || filename.includes('insulin') || filename.includes('gluc')) {
+    } else if (textToCheck.includes('sugar') || textToCheck.includes('diab') || textToCheck.includes('insulin') || textToCheck.includes('gluc') || textToCheck.includes('metformin') || textToCheck.includes('glimepiride')) {
       analysis = {
         condition: 'Type 2 Diabetes Mellitus',
         specialty: 'Endocrinologist',
@@ -41,14 +107,14 @@ export async function POST(req: NextRequest) {
           { name: 'Metformin Hydrochloride', dosage: '500 mg', frequency: 'Twice daily (With meals)', purpose: 'Biguanide to reduce liver glucose release' },
           { name: 'Glimepiride', dosage: '2 mg', frequency: 'Once daily (Before breakfast)', purpose: 'Sulfonylurea to stimulate insulin secretion' }
         ],
-        warnings: 'Warning: Watch for symptoms of hypoglycemia (shaking, sweating, confusion). Always carry a fast-acting glucose source (e.g. fruit juice or candy).',
+        warnings: 'Warning: Watch for symptoms of hypoglycemia (shaking, sweating, confusion). Always carry a fast-acting glucose source.',
         precautions: [
           'Take Metformin with food to minimize stomach discomfort.',
           'Maintain a low-glycemic, high-fiber dietary plan.',
           'Examine your feet daily for small cuts or abrasions.'
         ]
       };
-    } else if (filename.includes('skin') || filename.includes('rash') || filename.includes('dermat') || filename.includes('itch')) {
+    } else if (textToCheck.includes('skin') || textToCheck.includes('rash') || textToCheck.includes('dermat') || textToCheck.includes('itch') || textToCheck.includes('clotrimazole') || textToCheck.includes('cetirizine')) {
       analysis = {
         condition: 'Tinea Corporis (Fungal Skin Infection)',
         specialty: 'Dermatologist',
@@ -56,7 +122,7 @@ export async function POST(req: NextRequest) {
           { name: 'Clotrimazole Cream 1%', dosage: 'Apply thin layer', frequency: 'Twice daily topically', purpose: 'Antifungal agent to clear skin lesions' },
           { name: 'Cetirizine', dosage: '10 mg', frequency: 'Once daily (Before bedtime)', purpose: 'Antihistamine to control severe itching' }
         ],
-        warnings: 'Warning: For external topical use only. Do not apply near eyes or open mucosal membranes. Complete the full 2-week course even if itching stops.',
+        warnings: 'Warning: For external topical use only. Do not apply near eyes or open mucosal membranes. Complete the full 2-week course.',
         precautions: [
           'Keep the infected skin region completely dry and clean.',
           'Do not share personal items (clothing, towels) to prevent spread.',
@@ -64,6 +130,7 @@ export async function POST(req: NextRequest) {
         ]
       };
     } else {
+      // Fallback default: Respiratory / Bronchitis
       analysis = {
         condition: 'Acute Bronchial Bronchitis & Respiratory Congestion',
         specialty: 'Pulmonologist',

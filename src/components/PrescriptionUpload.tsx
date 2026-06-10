@@ -44,6 +44,7 @@ export default function PrescriptionUpload({ onRecommendDoctors, currentUser }: 
   const [result, setResult] = useState<ExtractionResult | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [history, setHistory] = useState<ExtractionResult[]>([]);
+  const [error, setError] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -131,6 +132,7 @@ export default function PrescriptionUpload({ onRecommendDoctors, currentUser }: 
   const handleDeleteFile = () => {
     setFile(null);
     setResult(null);
+    setError(null);
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
       setPreviewUrl(null);
@@ -141,6 +143,7 @@ export default function PrescriptionUpload({ onRecommendDoctors, currentUser }: 
   const handleAnalyzePrescription = async () => {
     if (!file) return;
 
+    setError(null);
     setIsAnalyzing(true);
     setScanProgress(0);
     setScanStepIdx(0);
@@ -160,7 +163,7 @@ export default function PrescriptionUpload({ onRecommendDoctors, currentUser }: 
 
       const data = await res.json();
       if (!res.ok) {
-        alert(data.error || 'Failed to scan prescription.');
+        setError(data.error || 'Failed to scan prescription.');
         setIsAnalyzing(false);
         return;
       }
@@ -169,7 +172,7 @@ export default function PrescriptionUpload({ onRecommendDoctors, currentUser }: 
       (window as any)._pendingPrescriptionResult = data.prescription;
     } catch (err) {
       console.error('OCR Upload error:', err);
-      alert('An error occurred during prescription analysis.');
+      setError('An error occurred during prescription analysis.');
       setIsAnalyzing(false);
     }
   };
@@ -319,6 +322,16 @@ export default function PrescriptionUpload({ onRecommendDoctors, currentUser }: 
 
       <div className={styles.mainGrid}>
         <div className={styles.editorCol}>
+          {error && (
+            <div className={styles.errorBanner}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }}>
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <span>{error}</span>
+            </div>
+          )}
           {!isAnalyzing && !result && (
             <>
               {!file ? (
