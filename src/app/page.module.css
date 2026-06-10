@@ -1,0 +1,706 @@
+.main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 16px;
+  max-width: 98%;
+  margin: 0 auto;
+  gap: 40px;
+}
+
+/* Header & Navbar */
+.navBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: var(--fg-color);
+}
+
+.logoIcon {
+  font-size: 1.4rem;
+  filter: drop-shadow(0 2px 4px var(--primary-glow));
+}
+
+.controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+/* Icon-Only Theme Toggle */
+.themeToggleIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--fg-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.themeToggleIcon:hover {
+  border-color: var(--primary-color);
+  transform: scale(1.05);
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
+/* Auth Navigation Buttons */
+.authButtons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.signinBtn {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--fg-color);
+  opacity: 0.8;
+  cursor: pointer;
+  padding: 8px 14px;
+  transition: opacity var(--transition-fast);
+}
+
+.signinBtn:hover {
+  opacity: 1;
+}
+
+.signupBtn {
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: var(--primary-color);
+  color: var(--bg-color);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.signupBtn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+/* User Account Badge */
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.userBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  padding: 4px 12px 4px 6px;
+  border-radius: 20px;
+}
+
+.userInitials {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: var(--bg-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.userNameText {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--fg-color);
+}
+
+.logoutBtn {
+  font-size: 0.8rem;
+  color: var(--danger-color);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  padding: 60px 10px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  font-weight: 400;
+  max-width: 850px;
+  color: var(--fg-color);
+  line-height: 1.2;
+}
+
+.hero p {
+  font-size: 1.05rem;
+  max-width: 600px;
+  opacity: 0.65;
+  line-height: 1.6;
+}
+
+/* Metrics Row */
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+}
+
+.metricCard {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.metricCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.metricNum {
+  font-size: 1.6rem;
+  font-family: var(--font-heading);
+  font-weight: 400;
+  color: var(--primary-color);
+}
+
+.metricLabel {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--fg-color);
+}
+
+.metricDesc {
+  font-size: 0.8rem;
+  opacity: 0.55;
+  line-height: 1.4;
+}
+
+/* Tabs Panel */
+.tabsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.tabsHeader {
+  display: flex;
+  border-bottom: 1px solid var(--card-border);
+  padding-bottom: 1px;
+  gap: 32px;
+}
+
+.tabButton {
+  padding: 12px 4px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  color: var(--fg-color);
+  opacity: 0.5;
+  transition: all var(--transition-fast);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tabButton:hover {
+  opacity: 0.8;
+}
+
+.tabIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.activeTabButton {
+  opacity: 1 !important;
+  color: var(--primary-color) !important;
+}
+
+.activeTabButton::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--primary-color);
+}
+
+.tabContent {
+  width: 100%;
+}
+
+/* FAQs Section Accordion */
+.faqSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.faqList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faqCard {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition-normal);
+  overflow: hidden;
+}
+
+.faqCard:hover {
+  border-color: var(--primary-color);
+}
+
+.faqCardOpen {
+  border-color: var(--primary-color);
+}
+
+.faqQuestionRow {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.faqQuestion {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--fg-color);
+  opacity: 0.9;
+}
+
+.faqIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  transition: transform var(--transition-normal);
+}
+
+.faqIconOpen {
+  transform: rotate(180deg);
+}
+
+.faqAnswerRow {
+  padding: 0 24px 18px 24px;
+  border-top: 1px dashed var(--card-border);
+  background: var(--input-bg);
+}
+
+.faqAnswerRow p {
+  padding-top: 12px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  opacity: 0.75;
+}
+
+/* Auth Dialog Modal Popup */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInModal 0.2s ease-out;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modalContent {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  width: 90%;
+  max-width: 400px;
+  border-radius: var(--radius-md);
+  padding: 30px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  animation: slideInModal 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+@keyframes slideInModal {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.closeBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity var(--transition-fast);
+}
+
+.closeBtn:hover {
+  opacity: 1;
+}
+
+.authTabs {
+  display: flex;
+  border-bottom: 1px solid var(--card-border);
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.authTabButton {
+  padding: 8px 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  opacity: 0.5;
+  position: relative;
+  transition: opacity var(--transition-fast);
+  color: var(--fg-color);
+}
+
+.authTabButton:hover {
+  opacity: 0.8;
+}
+
+.activeAuthTabButton {
+  opacity: 1 !important;
+  color: var(--primary-color) !important;
+}
+
+.activeAuthTabButton::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--primary-color);
+}
+
+.authForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inputGroup label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.inputGroup input {
+  padding: 10px 14px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  color: var(--fg-color);
+  font-size: 0.85rem;
+}
+
+.inputGroup input:focus {
+  border-color: var(--primary-color);
+}
+
+.authSubmitBtn {
+  margin-top: 8px;
+  padding: 12px;
+  background: var(--primary-color);
+  color: var(--bg-color);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.authSubmitBtn:hover {
+  background: var(--primary-hover);
+}
+
+.authSubmitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.authErrorMsg {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: var(--danger-color);
+  font-size: 0.8rem;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* Section Divider Header */
+.sectionHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 24px;
+  padding-top: 40px;
+  border-top: 1px solid var(--card-border);
+}
+
+.sectionHeader h2 {
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--fg-color);
+}
+
+.sectionHeader p {
+  font-size: 0.95rem;
+  opacity: 0.55;
+}
+
+/* Footer Link Redirects */
+.footer {
+  margin-top: 60px;
+  padding: 40px 0 20px;
+  text-align: center;
+  font-size: 0.8rem;
+  opacity: 0.5;
+  border-top: 1px solid var(--card-border);
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.footerLinks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-weight: 500;
+}
+
+.footerLink {
+  color: var(--fg-color);
+  opacity: 0.8;
+  transition: color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.footerLink:hover {
+  color: var(--primary-color);
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.footerSeparator {
+  opacity: 0.3;
+}
+
+/* Booked Appointments Section */
+.appointmentsSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.appointmentsHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.appointmentsTitle {
+  display: flex;
+  align-items: center;
+  color: var(--fg-color);
+}
+
+.appointmentsTitle h2 {
+  font-size: 1.8rem;
+  font-weight: 400;
+}
+
+.appointmentsHeader p {
+  font-size: 0.95rem;
+  opacity: 0.55;
+}
+
+.appointmentsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.appointmentCard {
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.appointmentCard:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.appointmentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  border-bottom: 1px dashed var(--card-border);
+  padding-bottom: 10px;
+}
+
+.appointmentHeader h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--fg-color);
+}
+
+.appointmentSpecialty {
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.cancelAppBtn {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--danger-color);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: transparent;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cancelAppBtn:hover {
+  background: var(--danger-color);
+  color: var(--bg-color);
+  border-color: var(--danger-color);
+}
+
+.appointmentDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.appointmentDetailRow {
+  display: flex;
+  gap: 8px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.detailLabel {
+  font-weight: 600;
+  opacity: 0.7;
+  min-width: 70px;
+}
+
+/* Responsive grids */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2.2rem;
+  }
+  
+  .metricsGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .appointmentsGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .tabsHeader {
+    flex-direction: column;
+    gap: 0;
+    border-bottom: none;
+  }
+
+  .tabButton {
+    text-align: left;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .activeTabButton::after {
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    right: auto;
+  }
+  
+  .userNameText {
+    display: none;
+  }
+}

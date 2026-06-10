@@ -1,0 +1,140 @@
+.main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 24px;
+  max-width: 800px;
+  margin: 0 auto;
+  gap: 32px;
+}
+
+/* Header & Navbar */
+.navBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--fg-color);
+}
+
+.logoIcon {
+  font-size: 1.3rem;
+}
+
+.backBtn {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--primary-color);
+  cursor: pointer;
+  padding: 6px 12px;
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  background: var(--card-bg);
+  transition: all var(--transition-fast);
+}
+
+.backBtn:hover {
+  border-color: var(--primary-color);
+  background: var(--primary-glow);
+}
+
+/* Policy Content Card */
+.contentCard {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 40px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: fadeIn var(--transition-normal);
+}
+
+.header {
+  border-bottom: 1px solid var(--card-border);
+  padding-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 2.2rem;
+  font-weight: 400;
+  color: var(--fg-color);
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  opacity: 0.55;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--fg-color);
+  font-family: var(--font-sans); /* Use sans-serif for section markers in article body */
+}
+
+.section p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  opacity: 0.8;
+}
+
+.cardFooter {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--card-border);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  text-align: center;
+}
+
+.cardFooter p {
+  font-size: 0.85rem;
+  opacity: 0.55;
+}
+
+.dashboardLink {
+  padding: 10px 24px;
+  background: var(--primary-color);
+  color: var(--bg-color);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dashboardLink:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
+@media (max-width: 600px) {
+  .contentCard {
+    padding: 24px;
+  }
+  
+  .header h1 {
+    font-size: 1.7rem;
+  }
+}

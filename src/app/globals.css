@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+:root {
+  /* Premium Calm Cyan + Health Green (Light Mode) */
+  --bg-color: hsl(180, 100%, 96.5%); /* #ecfeff / cyan-50 equivalent */
+  --fg-color: hsl(197, 63%, 24%);    /* #164e63 / cyan-900 equivalent */
+  --card-bg: hsl(0, 0%, 100%);
+  --card-border: rgba(8, 145, 178, 0.1);
+  --input-bg: hsl(180, 50%, 98%);
+  --input-border: rgba(8, 145, 178, 0.15);
+  
+  --primary-color: hsl(192, 91%, 38%); /* #0891B2 / Calm Cyan */
+  --primary-hover: hsl(192, 91%, 30%);
+  --primary-glow: rgba(8, 145, 178, 0.08);
+  --secondary-color: hsl(189, 85%, 54%); /* #22D3EE / Secondary Cyan */
+  --secondary-hover: hsl(189, 85%, 45%);
+  --secondary-glow: rgba(34, 211, 238, 0.08);
+  --accent-color: hsl(160, 84%, 30%); /* #059669 / Health Green */
+  --accent-hover: hsl(160, 84%, 24%);
+  
+  --success-color: hsl(160, 84%, 30%);
+  --warning-color: hsl(35, 80%, 45%);
+  --danger-color: hsl(350, 75%, 48%);
+  
+  --font-sans: 'Nunito', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Nunito', 'Playfair Display', Georgia, serif;
+  
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  
+  --shadow-sm: 0 1px 3px rgba(8, 145, 178, 0.02), 0 1px 2px rgba(8, 145, 178, 0.04);
+  --shadow-md: 0 10px 20px -3px rgba(8, 145, 178, 0.04), 0 4px 10px -2px rgba(8, 145, 178, 0.02);
+  --shadow-lg: 0 25px 50px -12px rgba(8, 145, 178, 0.08), 0 8px 16px -6px rgba(8, 145, 178, 0.04);
+  
+  --transition-fast: 0.12s ease;
+  --transition-normal: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --blur-amount: 12px;
+}
+
+[data-theme='dark'] {
+  /* Premium Calm Cyan + Health Green (Dark Mode) */
+  --bg-color: hsl(197, 85%, 5%); /* Deep Cyan-Slate black */
+  --fg-color: hsl(180, 100%, 96.5%); /* Bright cyan-white text */
+  --card-bg: rgba(8, 51, 68, 0.45); /* Cyan-900 glass base */
+  --card-border: rgba(34, 211, 238, 0.12);
+  --input-bg: rgba(8, 51, 68, 0.55);
+  --input-border: rgba(34, 211, 238, 0.18);
+  
+  --primary-color: hsl(189, 85%, 54%); /* #22D3EE / Cyan-400 */
+  --primary-hover: hsl(189, 85%, 45%);
+  --primary-glow: rgba(34, 211, 238, 0.15);
+  --secondary-color: hsl(192, 91%, 38%); /* #0891B2 / Cyan-600 */
+  --secondary-hover: hsl(192, 91%, 30%);
+  --secondary-glow: rgba(8, 145, 178, 0.12);
+  --accent-color: hsl(160, 84%, 40%); /* #10b981 / Emerald-500 equivalent for CTA */
+  --accent-hover: hsl(160, 84%, 34%);
+  
+  --success-color: hsl(160, 84%, 40%);
+  --warning-color: hsl(35, 80%, 60%);
+  --danger-color: hsl(350, 80%, 60%);
+  
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 10px 30px -10px rgba(0,0,0,0.5);
+  --shadow-lg: 0 25px 60px -15px rgba(0,0,0,0.7);
+}
+
+/* Base resets */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  color: var(--fg-color);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+  overflow-x: hidden;
+}
+
+/* Re-introduce a subtle radial gradient light pool to look highly premium */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 80% 0%, var(--primary-glow) 0%, transparent 50%),
+    radial-gradient(circle at 10% 90%, var(--secondary-glow) 0%, transparent 50%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--input-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideScanner {
+  0% { transform: translateY(-100%); }
+  50% { transform: translateY(100%); }
+  100% { transform: translateY(-100%); }
+}
+
+@keyframes gridSweep {
+  from { background-position: 0 0; }
+  to { background-position: 0 40px; }
+}
+
+@keyframes pulseOpacity {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Helper styles */
+.animate-fade-in {
+  animation: fadeIn var(--transition-normal) forwards;
+}
+
+.glass-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-lg);
+}

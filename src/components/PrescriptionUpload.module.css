@@ -1,0 +1,476 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.titleSection {
+  margin-bottom: 8px;
+}
+
+.titleSection h2 {
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: var(--fg-color);
+  margin-bottom: 6px;
+}
+
+.titleSection p {
+  color: var(--fg-color);
+  opacity: 0.65;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Dropzone styling */
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  border: 2px dashed var(--input-border);
+  border-radius: var(--radius-md);
+  background: var(--input-bg);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+  text-align: center;
+}
+
+.dropzone:hover {
+  border-color: var(--primary-color);
+  background: var(--primary-glow);
+}
+
+.dropzoneActive {
+  border-color: var(--primary-color);
+  background: var(--primary-glow);
+}
+
+.uploadIcon {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+  opacity: 0.8;
+}
+
+.dropzoneText h3 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--fg-color);
+  margin-bottom: 4px;
+}
+
+.dropzoneText p {
+  font-size: 0.8rem;
+  opacity: 0.5;
+}
+
+.fileInput {
+  display: none;
+}
+
+/* File Selected Cards */
+.fileCard {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
+  animation: fadeIn var(--transition-normal);
+}
+
+.fileDetails {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.thumbnailWrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--card-border);
+  background: var(--input-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pdfIcon {
+  font-size: 1.6rem;
+  color: var(--danger-color);
+}
+
+.fileNameInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.fileName {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--fg-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fileSize {
+  font-size: 0.75rem;
+  opacity: 0.5;
+}
+
+.deleteBtn {
+  font-size: 1.3rem;
+  color: var(--danger-color);
+  opacity: 0.6;
+  cursor: pointer;
+  padding: 6px;
+  transition: opacity var(--transition-fast);
+}
+
+.deleteBtn:hover {
+  opacity: 1;
+}
+
+/* Action Button */
+.actionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--primary-color);
+  color: var(--bg-color);
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.actionBtn:hover:not(:disabled) {
+  background: var(--primary-hover);
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
+.actionBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Telemetry OCR Scanning Animation */
+.scanContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 24px;
+  min-height: 240px;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  background: var(--input-bg);
+  background-image: 
+    linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px), 
+    linear-gradient(90deg, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
+  background-size: 20px 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.scanContainer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background: linear-gradient(180deg, var(--primary-glow), transparent);
+  border-top: 2px solid var(--primary-color);
+  animation: slideScanner 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.scanProgress {
+  width: 100%;
+  max-width: 280px;
+  height: 4px;
+  background: var(--card-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.scanProgressBar {
+  height: 100%;
+  background: var(--primary-color);
+  transition: width 0.1s linear;
+}
+
+.scanText {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--fg-color);
+}
+
+.scanLog {
+  font-size: 0.8rem;
+  opacity: 0.55;
+  text-align: center;
+  font-family: monospace;
+}
+
+/* Results dashboard */
+.resultsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: fadeIn var(--transition-normal);
+}
+
+.resultCard {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+
+.resultHeader {
+  border-bottom: 1px solid var(--card-border);
+  padding-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.resultHeader h3 {
+  font-size: 1.35rem;
+  font-family: var(--font-heading);
+  color: var(--fg-color);
+}
+
+.resetBtn {
+  font-size: 0.8rem;
+  color: var(--danger-color);
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-decoration: underline;
+}
+
+/* Split layout columns */
+.analysisGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+.medsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.medsSection h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+}
+
+/* Elegant minimalist table */
+.medsTableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+}
+
+.medsTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.medsTable th {
+  background: var(--input-bg);
+  padding: 10px 14px;
+  font-weight: 600;
+  color: var(--fg-color);
+  opacity: 0.8;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.medsTable td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--card-border);
+  color: var(--fg-color);
+  opacity: 0.9;
+}
+
+.medsTable tr:last-child td {
+  border-bottom: none;
+}
+
+.medName {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+/* Diagnostic referal column */
+.referralsCol {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.summarySection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+}
+
+.summarySection h4 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+}
+
+.diagCondition {
+  font-size: 1.15rem;
+  font-family: var(--font-heading);
+  font-weight: 400;
+  color: var(--fg-color);
+  margin-top: 4px;
+}
+
+.diagReferral {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+
+.diagReferral strong {
+  color: var(--primary-color);
+}
+
+/* Precautions Card list */
+.warningsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.warningsSection h4 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+}
+
+.warningCard {
+  border: 1px solid rgba(186, 45, 45, 0.15);
+  background: rgba(186, 45, 45, 0.04);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  border-left: 3px solid var(--danger-color);
+}
+
+.warningCard p {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--fg-color);
+  opacity: 0.9;
+}
+
+.precautionCard {
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  background: var(--card-bg);
+}
+
+.precautionList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.precautionList li {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.precautionList li::before {
+  content: '—';
+  color: var(--primary-color);
+}
+
+.cardFooter {
+  border-top: 1px solid var(--card-border);
+  padding-top: 18px;
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.recommendDocsBtn {
+  font-size: 0.85rem;
+  padding: 10px 20px;
+  background: var(--primary-color);
+  color: var(--bg-color);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.recommendDocsBtn:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
+/* Responsive constraints */
+@media (max-width: 768px) {
+  .analysisGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}

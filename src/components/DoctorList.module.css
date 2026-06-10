@@ -1,0 +1,408 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.titleSection h2 {
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: var(--fg-color);
+  margin-bottom: 6px;
+}
+
+.titleSection p {
+  color: var(--fg-color);
+  opacity: 0.65;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Filters */
+.filterRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filterLabel {
+  font-size: 0.85rem;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.select {
+  padding: 8px 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  color: var(--fg-color);
+  font-weight: 500;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.select:focus {
+  border-color: var(--primary-color);
+}
+
+.clearFilterBtn {
+  font-size: 0.8rem;
+  color: var(--danger-color);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 6px 10px;
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.clearFilterBtn:hover {
+  background: var(--primary-glow);
+  border-color: var(--danger-color);
+}
+
+/* Grid of doctors */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.docCard {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+
+.docCard:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-md);
+}
+
+.recommendedBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--primary-glow);
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.docProfile {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--primary-glow);
+  border: 1px solid var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--primary-color);
+}
+
+.docInfo h3 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.docSpecialty {
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+}
+
+.stars {
+  color: #d97706; /* Refined Gold */
+}
+
+.experience {
+  opacity: 0.55;
+}
+
+.clinicDetails {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.clinicName {
+  font-weight: 500;
+}
+
+.clinicLoc {
+  opacity: 0.55;
+  font-size: 0.8rem;
+}
+
+/* Slots */
+.slotsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.slotsTitle {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.5;
+  font-weight: 600;
+}
+
+.slotsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.slotBtn {
+  font-size: 0.75rem;
+  padding: 8px;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--fg-color);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.slotBtn:hover {
+  border-color: var(--primary-color);
+  background: var(--primary-glow);
+}
+
+/* Booking Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalContent {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  width: 90%;
+  max-width: 420px;
+  border-radius: var(--radius-md);
+  padding: 30px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  animation: fadeIn var(--transition-fast) forwards;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity var(--transition-fast);
+}
+
+.closeBtn:hover {
+  opacity: 1;
+}
+
+.modalHeader {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.modalHeader h2 {
+  font-size: 1.4rem;
+  font-weight: 400;
+  margin-bottom: 6px;
+}
+
+.modalHeader p {
+  font-size: 0.85rem;
+  opacity: 0.6;
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inputGroup label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.inputGroup input {
+  padding: 10px 14px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  color: var(--fg-color);
+  font-size: 0.85rem;
+}
+
+.inputGroup input:focus {
+  border-color: var(--primary-color);
+}
+
+.bookingSummary {
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+}
+
+.summaryRow span:first-child {
+  opacity: 0.5;
+}
+
+.summaryRow span:last-child {
+  font-weight: 500;
+}
+
+.modalFooter {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.confirmBtn {
+  padding: 12px;
+  background: var(--primary-color);
+  color: var(--bg-color);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.confirmBtn:hover {
+  background: var(--primary-hover);
+}
+
+/* Success Animation inside Modal */
+.successContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.successCircle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--primary-glow);
+  border: 1px solid var(--success-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: var(--success-color);
+  margin-bottom: 20px;
+}
+
+.successText h3 {
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: var(--fg-color);
+  margin-bottom: 6px;
+}
+
+.successText p {
+  font-size: 0.9rem;
+  opacity: 0.7;
+  line-height: 1.5;
+}
+
+.doneBtn {
+  margin-top: 24px;
+  padding: 10px 24px;
+  border: 1px solid var(--primary-color);
+  border-radius: var(--radius-sm);
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.doneBtn:hover {
+  background: var(--primary-glow);
+}

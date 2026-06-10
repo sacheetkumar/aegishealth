@@ -1,0 +1,559 @@
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import styles from './page.module.css';
+import Predictor from '@/components/Predictor';
+import ChatAssistant from '@/components/ChatAssistant';
+import DoctorList from '@/components/DoctorList';
+import PrescriptionUpload from '@/components/PrescriptionUpload';
+
+interface FaqItem {
+  id: number;
+  question: string;
+  answer: string;
+}
+
+const FAQ_ITEMS: FaqItem[] = [
+  {
+    id: 1,
+    question: 'How does the AI disease prediction work?',
+    answer: 'Aegis uses a client-side Machine Learning Naive Bayes classifier. It is trained on structured clinical symptom-disease vectors, evaluating both prior likelihood P(Disease) and conditional symptom weights P(Symptom | Disease) to compute a percentage-based confidence match for your symptoms.'
+  },
+  {
+    id: 2,
+    question: 'Is my personal health data stored or shared?',
+    answer: 'No. To guarantee patient privacy, the entire diagnostic engine and text processing execute client-side directly in your browser. We do not transmit, save, or upload any symptom check logs, queries, or medical results to any remote databases.'
+  },
+  {
+    id: 3,
+    question: 'How are the recommended doctors matched?',
+    answer: 'Referral recommendations are determined by standard clinical guidelines matching predicted diseases to specialties. For instance, respiratory symptoms refer to Pulmonologists, stomach conditions refer to Gastroenterologists, and skin rashes refer to Dermatologists.'
+  },
+  {
+    id: 4,
+    question: 'Can I book real clinical consultations through this platform?',
+    answer: 'The scheduling calendar is a mock booking system built for demonstration purposes. It simulates slot reservation, validation checks, and patient notification workflows but does not schedule physical doctor visits.'
+  },
+  {
+    id: 5,
+    question: 'Is Aegis a replacement for certified medical advice?',
+    answer: 'No. Aegis Health is a software simulation tool. It is not certified for clinical diagnostic use or medical treatment plans. For any real health emergency, please contact your local emergency services or visit an urgent care facility immediately.'
+  }
+];
+
+export default function Home() {
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [activeTab, setActiveTab] = useState<'predictor' | 'chatbot' | 'prescription'>('predictor');
+  const [specialtyFilter, setSpecialtyFilter] = useState<string | undefined>(undefined);
+  const doctorSectionRef = useRef<HTMLDivElement>(null);
+
+  // Authentication State
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
+  const [currentUser, setCurrentUser] = useState<{ email: string; name: string } | null>(null);
+  
+  // Auth Form Fields
+  const [emailInput, setEmailInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [nameInput, setNameInput] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [appointments, setAppointments] = useState<any[]>([]);
+
+  // FAQ Accordion State
+  const [expandedFaqId, setExpandedFaqId] = useState<number | null>(null);
+
+  const loadAppointments = (email?: string) => {
+    const activeEmail = email || currentUser?.email;
+    if (!activeEmail) {
+      setAppointments([]);
+      return;
+    }
+    const allAppsStr = localStorage.getItem('aegis_appointments');
+    const allApps = allAppsStr ? JSON.parse(allAppsStr) : [];
+    const userApps = allApps.filter((app: any) => app.userEmail.toLowerCase() === activeEmail.toLowerCase());
+    setAppointments(userApps);
+  };
+
+  const handleCancelAppointment = (id: string) => {
+    const allAppsStr = localStorage.getItem('aegis_appointments');
+    const allApps = allAppsStr ? JSON.parse(allAppsStr) : [];
+    const updatedApps = allApps.filter((app: any) => app.id !== id);
+    localStorage.setItem('aegis_appointments', JSON.stringify(updatedApps));
+    loadAppointments();
+  };
+
+  // Sync theme and session on mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+
+    // Check if user session mock exists
+    const mockSession = sessionStorage.getItem('userSession');
+    if (mockSession) {
+      const parsedUser = JSON.parse(mockSession);
+      setCurrentUser(parsedUser);
+      loadAppointments(parsedUser.email);
+    }
+  }, []);
+
+  // Sync appointments list when currentUser changes
+  useEffect(() => {
+    if (currentUser) {
+      loadAppointments(currentUser.email);
+    } else {
+      setAppointments([]);
+    }
+  }, [currentUser]);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(nextTheme);
+    localStorage.setItem('theme', nextTheme);
+    document.documentElement.setAttribute('data-theme', nextTheme);
+  };
+
+  // Scroll to Doctor list and set active specialty filter
+  const handleRecommendDoctors = (specialty: string) => {
+    setSpecialtyFilter(specialty);
+    setTimeout(() => {
+      doctorSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
+  const handleClearSpecialtyFilter = () => {
+    setSpecialtyFilter(undefined);
+  };
+
+  const handleOpenAuth = (mode: 'signin' | 'signup') => {
+    setAuthMode(mode);
+    setIsAuthOpen(true);
+    setAuthError(null);
+    // Clear inputs
+    setEmailInput('');
+    setPasswordInput('');
+    setNameInput('');
+  };
+
+  const handleCloseAuth = () => {
+    setIsAuthOpen(false);
+    setAuthError(null);
+  };
+
+  const handleAuthSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailInput || !passwordInput) return;
+
+    setAuthLoading(true);
+    setAuthError(null);
+
+    // Simulate database latency
+    setTimeout(() => {
+      const usersStr = localStorage.getItem('aegis_users');
+      const users = usersStr ? JSON.parse(usersStr) : [];
+
+      if (authMode === 'signup') {
+        const userExists = users.some((u: any) => u.email.toLowerCase() === emailInput.toLowerCase());
+        
+        if (userExists) {
+          setAuthError('An account with this email address already exists.');
+          setAuthLoading(false);
+          return;
+        }
+
+        const newUser = {
+          name: nameInput || 'User',
+          email: emailInput,
+          password: passwordInput,
+        };
+        users.push(newUser);
+        localStorage.setItem('aegis_users', JSON.stringify(users));
+
+        const sessionUser = { email: newUser.email, name: newUser.name };
+        setCurrentUser(sessionUser);
+        sessionStorage.setItem('userSession', JSON.stringify(sessionUser));
+        setIsAuthOpen(false);
+      } else {
+        const registeredUser = users.find(
+          (u: any) => u.email.toLowerCase() === emailInput.toLowerCase() && u.password === passwordInput
+        );
+
+        if (!registeredUser) {
+          setAuthError('Invalid email address or password. Please try again.');
+          setAuthLoading(false);
+          return;
+        }
+
+        const sessionUser = { email: registeredUser.email, name: registeredUser.name };
+        setCurrentUser(sessionUser);
+        sessionStorage.setItem('userSession', JSON.stringify(sessionUser));
+        setIsAuthOpen(false);
+      }
+      setAuthLoading(false);
+    }, 800);
+  };
+
+  const handleLogOut = () => {
+    setCurrentUser(null);
+    sessionStorage.removeItem('userSession');
+  };
+
+  const toggleFaq = (id: number) => {
+    setExpandedFaqId(prev => (prev === id ? null : id));
+  };
+
+  return (
+    <main className={styles.main}>
+      {/* Navigation bar */}
+      <nav className={styles.navBar}>
+        <div className={styles.logo}>
+          <span className={styles.logoIcon}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '6px' }}>
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </span>
+          Aegis Health
+        </div>
+        
+        {/* Right side navigation utilities */}
+        <div className={styles.controls}>
+          {/* Icon-Only Theme Toggle */}
+          <button 
+            onClick={toggleTheme} 
+            className={styles.themeToggleIcon}
+            aria-label="Toggle Theme"
+            title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+          >
+            {theme === 'light' ? (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+            )}
+          </button>
+
+          {/* Authentication Section */}
+          {currentUser ? (
+            <div className={styles.userSection}>
+              <div className={styles.userBadge} title={currentUser.email}>
+                <span className={styles.userInitials}>
+                  {currentUser.name[0]?.toUpperCase()}
+                </span>
+                <span className={styles.userNameText}>{currentUser.name}</span>
+              </div>
+              <button onClick={handleLogOut} className={styles.logoutBtn}>
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div className={styles.authButtons}>
+              <button 
+                onClick={() => handleOpenAuth('signin')} 
+                className={styles.signinBtn}
+              >
+                Sign In
+              </button>
+              <button 
+                onClick={() => handleOpenAuth('signup')} 
+                className={styles.signupBtn}
+              >
+                Sign Up
+              </button>
+            </div>
+          )}
+        </div>
+      </nav>
+
+      {/* Hero Banner */}
+      <section className={styles.hero}>
+        <h1>AI-Powered Disease Prediction & Referral Scheduler</h1>
+        <p>
+          Diagnose health symptoms instantly with our Naive Bayes Machine Learning model and connect with specialized local physicians for follow-up care.
+        </p>
+      </section>
+
+      {/* Core Platform Metrics */}
+      <section className={styles.metricsGrid}>
+        <div className={styles.metricCard}>
+          <div className={styles.metricNum}>Bayes v1.0</div>
+          <div className={styles.metricLabel}>Dynamic AI Engine</div>
+          <div className={styles.metricDesc}>Trained on probabilistic diagnostic symptom vectors</div>
+        </div>
+        <div className={styles.metricCard}>
+          <div className={styles.metricNum}>20+ Types</div>
+          <div className={styles.metricLabel}>Trained Conditions</div>
+          <div className={styles.metricDesc}>Coverage of primary medical disease classifications</div>
+        </div>
+        <div className={styles.metricCard}>
+          <div className={styles.metricNum}>100 Doctors</div>
+          <div className={styles.metricLabel}>Specialist Network</div>
+          <div className={styles.metricDesc}>On-duty board physicians with instant schedule booking</div>
+        </div>
+      </section>
+
+      {/* Tabs Menu */}
+      <section className={styles.tabsContainer}>
+        <div className={styles.tabsHeader}>
+          <button
+            onClick={() => setActiveTab('predictor')}
+            className={`${styles.tabButton} ${activeTab === 'predictor' ? styles.activeTabButton : ''}`}
+          >
+            <span className={styles.tabIcon}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44 2.5 2.5 0 0 1 0-3.12 3 3 0 0 1 0-4.88 2.5 2.5 0 0 1 0-3.12A2.5 2.5 0 0 1 9.5 2z"/>
+                <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44 2.5 2.5 0 0 0 0-3.12 3 3 0 0 0 0-4.88 2.5 2.5 0 0 0 0-3.12A2.5 2.5 0 0 0 14.5 2z"/>
+              </svg>
+            </span>
+            Symptom Matrix Selector
+          </button>
+          <button
+            onClick={() => setActiveTab('chatbot')}
+            className={`${styles.tabButton} ${activeTab === 'chatbot' ? styles.activeTabButton : ''}`}
+          >
+            <span className={styles.tabIcon}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </span>
+            Conversational AI Health Advisor
+          </button>
+          <button
+            onClick={() => setActiveTab('prescription')}
+            className={`${styles.tabButton} ${activeTab === 'prescription' ? styles.activeTabButton : ''}`}
+          >
+            <span className={styles.tabIcon}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+              </svg>
+            </span>
+            Prescription OCR Analyzer
+          </button>
+        </div>
+
+        <div className={`${styles.tabContent} glass-card`} style={{ padding: '24px' }}>
+          {activeTab === 'predictor' && (
+            <Predictor onRecommendDoctors={handleRecommendDoctors} />
+          )}
+          {activeTab === 'chatbot' && (
+            <ChatAssistant onRecommendDoctors={handleRecommendDoctors} />
+          )}
+          {activeTab === 'prescription' && (
+            <PrescriptionUpload onRecommendDoctors={handleRecommendDoctors} />
+          )}
+        </div>
+      </section>
+
+      {/* Booked Appointments Section (Logged-in only) */}
+      {currentUser && appointments.length > 0 && (
+        <section className={`${styles.appointmentsSection} glass-card`} style={{ padding: '32px' }}>
+          <div className={styles.appointmentsHeader}>
+            <div className={styles.appointmentsTitle}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px', verticalAlign: 'middle', display: 'inline-block', color: 'var(--primary-color)' }}>
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              <h2>Your Scheduled Consultations</h2>
+            </div>
+            <p>Manage your upcoming physician appointments and clinic schedules.</p>
+          </div>
+          <div className={styles.appointmentsGrid}>
+            {appointments.map(app => (
+              <div key={app.id} className={styles.appointmentCard}>
+                <div className={styles.appointmentHeader}>
+                  <div>
+                    <h3>{app.docName}</h3>
+                    <span className={styles.appointmentSpecialty}>{app.specialty}</span>
+                  </div>
+                  <button 
+                    onClick={() => handleCancelAppointment(app.id)} 
+                    className={styles.cancelAppBtn}
+                    title="Cancel Appointment"
+                  >
+                    Cancel
+                  </button>
+                </div>
+                <div className={styles.appointmentDetails}>
+                  <div className={styles.appointmentDetailRow}>
+                    <span className={styles.detailLabel}>Patient:</span>
+                    <span>{app.patientName} ({app.patientPhone})</span>
+                  </div>
+                  <div className={styles.appointmentDetailRow}>
+                    <span className={styles.detailLabel}>Schedule:</span>
+                    <span><strong>{app.date}</strong> at <strong>{app.time}</strong></span>
+                  </div>
+                  <div className={styles.appointmentDetailRow}>
+                    <span className={styles.detailLabel}>Location:</span>
+                    <span>{app.clinic}, {app.location}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Doctor directory section */}
+      <section ref={doctorSectionRef} className="glass-card" style={{ padding: '32px' }}>
+        <DoctorList
+          filteredSpecialty={specialtyFilter}
+          onClearSpecialtyFilter={handleClearSpecialtyFilter}
+          currentUser={currentUser}
+          onAppointmentBooked={() => loadAppointments()}
+        />
+      </section>
+
+      {/* FAQs Section */}
+      <section className={styles.faqSection}>
+        <div className={styles.sectionHeader}>
+          <h2>Frequently Asked Questions</h2>
+          <p>Answers to common inquiries regarding our clinical diagnostics and scheduling procedures.</p>
+        </div>
+
+        <div className={styles.faqList}>
+          {FAQ_ITEMS.map(faq => {
+            const isOpen = expandedFaqId === faq.id;
+            return (
+              <div key={faq.id} className={`${styles.faqCard} ${isOpen ? styles.faqCardOpen : ''}`}>
+                <button 
+                  onClick={() => toggleFaq(faq.id)} 
+                  className={styles.faqQuestionRow}
+                  aria-expanded={isOpen}
+                >
+                  <span className={styles.faqQuestion}>{faq.question}</span>
+                  <span className={`${styles.faqIcon} ${isOpen ? styles.faqIconOpen : ''}`}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                  </span>
+                </button>
+                {isOpen && (
+                  <div className={`${styles.faqAnswerRow} animate-fade-in`}>
+                    <p>{faq.answer}</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Unified Authentication Modal Popup */}
+      {isAuthOpen && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <button onClick={handleCloseAuth} className={styles.closeBtn}>×</button>
+            
+            <div className={styles.authTabs}>
+              <button 
+                onClick={() => { setAuthMode('signin'); setAuthError(null); }} 
+                className={`${styles.authTabButton} ${authMode === 'signin' ? styles.activeAuthTabButton : ''}`}
+              >
+                Sign In
+              </button>
+              <button 
+                onClick={() => { setAuthMode('signup'); setAuthError(null); }} 
+                className={`${styles.authTabButton} ${authMode === 'signup' ? styles.activeAuthTabButton : ''}`}
+              >
+                Sign Up
+              </button>
+            </div>
+
+            {authError && (
+              <div className={styles.authErrorMsg} role="alert">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px', verticalAlign: 'middle', display: 'inline-block', flexShrink: 0 }}>
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span>{authError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleAuthSubmit} className={styles.authForm}>
+              {authMode === 'signup' && (
+                <div className={styles.inputGroup}>
+                  <label htmlFor="authName">Full Name</label>
+                  <input
+                    id="authName"
+                    type="text"
+                    placeholder="John Doe"
+                    required
+                    value={nameInput}
+                    onChange={(e) => setNameInput(e.target.value)}
+                  />
+                </div>
+              )}
+
+              <div className={styles.inputGroup}>
+                <label htmlFor="authEmail">Email Address</label>
+                <input
+                  id="authEmail"
+                  type="email"
+                  placeholder="name@example.com"
+                  required
+                  value={emailInput}
+                  onChange={(e) => setEmailInput(e.target.value)}
+                />
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label htmlFor="authPassword">Password</label>
+                <input
+                  id="authPassword"
+                  type="password"
+                  placeholder="••••••••"
+                  required
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                />
+              </div>
+
+              <button 
+                type="submit" 
+                disabled={authLoading} 
+                className={styles.authSubmitBtn}
+              >
+                {authLoading ? 'Verifying Account...' : (authMode === 'signin' ? 'Sign In' : 'Create Account')}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Footer copyright and redirect links */}
+      <footer className={styles.footer}>
+        <div className={styles.footerLinks}>
+          <Link href="/privacy" className={styles.footerLink}>
+            Privacy Policy & Data Security
+          </Link>
+          <span className={styles.footerSeparator}>•</span>
+          <a href="#top" className={styles.footerLink}>Back to Top</a>
+        </div>
+        <p>© 2026 Aegis AI Health Platform. All rights reserved.</p>
+      </footer>
+    </main>
+  );
+}
