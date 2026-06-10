@@ -215,8 +215,8 @@ export default function Home() {
 
         {/* Right side navigation utilities */}
         <div className={styles.controls}>
-          <Link href="/doctors" className={styles.navLink}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px', display: 'inline-block', verticalAlign: 'middle' }}>
+          <Link href="/doctors" className={styles.signupBtn} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', textDecoration: 'none' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
               <circle cx="9" cy="7" r="4" />
               <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -225,7 +225,7 @@ export default function Home() {
             Find Doctors
           </Link>
 
-          <button onClick={() => setIsBookingOpen(true)} className={styles.signupBtn} style={{ fontSize: '0.85rem', padding: '8px 14px', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <button onClick={() => setIsBookingOpen(true)} className={styles.signupBtn} style={{ fontSize: '0.85rem', padding: '8px 16px', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
               <line x1="16" y1="2" x2="16" y2="6" />
@@ -235,7 +235,39 @@ export default function Home() {
             Book Appointment
           </button>
 
-          {/* Icon-Only Theme Toggle */}
+          {/* Authentication Section */}
+          {currentUser ? (
+            <div className={styles.userSection}>
+              <div className={styles.userBadge} title={currentUser.email}>
+                <span className={styles.userInitials}>
+                  {currentUser.name[0]?.toUpperCase()}
+                </span>
+                <span className={styles.userNameText}>{currentUser.name}</span>
+              </div>
+              <button onClick={handleLogOut} className={styles.logoutBtn}>
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div className={styles.authButtons}>
+              <button
+                onClick={() => handleOpenAuth('signin')}
+                className={styles.signupBtn}
+                style={{ border: 'none' }}
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => handleOpenAuth('signup')}
+                className={styles.signupBtn}
+                style={{ border: 'none' }}
+              >
+                Sign Up
+              </button>
+            </div>
+          )}
+
+          {/* Icon-Only Theme Toggle (shift to right-most) */}
           <button
             onClick={toggleTheme}
             className={styles.themeToggleIcon}
@@ -260,36 +292,6 @@ export default function Home() {
               </svg>
             )}
           </button>
-
-          {/* Authentication Section */}
-          {currentUser ? (
-            <div className={styles.userSection}>
-              <div className={styles.userBadge} title={currentUser.email}>
-                <span className={styles.userInitials}>
-                  {currentUser.name[0]?.toUpperCase()}
-                </span>
-                <span className={styles.userNameText}>{currentUser.name}</span>
-              </div>
-              <button onClick={handleLogOut} className={styles.logoutBtn}>
-                Logout
-              </button>
-            </div>
-          ) : (
-            <div className={styles.authButtons}>
-              <button
-                onClick={() => handleOpenAuth('signin')}
-                className={styles.signinBtn}
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => handleOpenAuth('signup')}
-                className={styles.signupBtn}
-              >
-                Sign Up
-              </button>
-            </div>
-          )}
         </div>
       </nav>
 
