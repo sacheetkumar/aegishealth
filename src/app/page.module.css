@@ -8,7 +8,6 @@
   gap: 40px;
 }
 
-/* Header & Navbar */
 .navBar {
   display: flex;
   justify-content: space-between;
@@ -38,7 +37,26 @@
   align-items: center;
 }
 
-/* Icon-Only Theme Toggle */
+.navLink {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--fg-color);
+  opacity: 0.8;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.navLink:hover {
+  opacity: 1;
+  color: var(--primary-color);
+  background: var(--input-bg);
+}
+
 .themeToggleIcon {
   width: 38px;
   height: 38px;

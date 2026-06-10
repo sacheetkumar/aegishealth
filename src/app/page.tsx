@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 import Predictor from '@/components/Predictor';
 import ChatAssistant from '@/components/ChatAssistant';
-import DoctorList from '@/components/DoctorList';
 import PrescriptionUpload from '@/components/PrescriptionUpload';
 
 interface FaqItem {
@@ -43,16 +43,15 @@ const FAQ_ITEMS: FaqItem[] = [
 ];
 
 export default function Home() {
+  const router = useRouter();
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [activeTab, setActiveTab] = useState<'predictor' | 'chatbot' | 'prescription'>('predictor');
-  const [specialtyFilter, setSpecialtyFilter] = useState<string | undefined>(undefined);
-  const doctorSectionRef = useRef<HTMLDivElement>(null);
 
   // Authentication State
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [currentUser, setCurrentUser] = useState<{ email: string; name: string } | null>(null);
-  
+
   // Auth Form Fields
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
@@ -64,24 +63,36 @@ export default function Home() {
   // FAQ Accordion State
   const [expandedFaqId, setExpandedFaqId] = useState<number | null>(null);
 
-  const loadAppointments = (email?: string) => {
+  const loadAppointments = async (email?: string) => {
     const activeEmail = email || currentUser?.email;
     if (!activeEmail) {
       setAppointments([]);
       return;
     }
-    const allAppsStr = localStorage.getItem('aegis_appointments');
-    const allApps = allAppsStr ? JSON.parse(allAppsStr) : [];
-    const userApps = allApps.filter((app: any) => app.userEmail.toLowerCase() === activeEmail.toLowerCase());
-    setAppointments(userApps);
+    try {
+      const res = await fetch(`/api/appointments?email=${encodeURIComponent(activeEmail)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setAppointments(data.appointments || []);
+      }
+    } catch (err) {
+      console.error('Failed to load appointments:', err);
+    }
   };
 
-  const handleCancelAppointment = (id: string) => {
-    const allAppsStr = localStorage.getItem('aegis_appointments');
-    const allApps = allAppsStr ? JSON.parse(allAppsStr) : [];
-    const updatedApps = allApps.filter((app: any) => app.id !== id);
-    localStorage.setItem('aegis_appointments', JSON.stringify(updatedApps));
-    loadAppointments();
+  const handleCancelAppointment = async (id: string) => {
+    try {
+      const res = await fetch('/api/appointments/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+      if (res.ok) {
+        loadAppointments();
+      }
+    } catch (err) {
+      console.error('Failed to cancel appointment:', err);
+    }
   };
 
   // Sync theme and session on mount
@@ -119,16 +130,9 @@ export default function Home() {
     document.documentElement.setAttribute('data-theme', nextTheme);
   };
 
-  // Scroll to Doctor list and set active specialty filter
+  // Redirect to separate Doctors page with selected specialty recommendation
   const handleRecommendDoctors = (specialty: string) => {
-    setSpecialtyFilter(specialty);
-    setTimeout(() => {
-      doctorSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
-  };
-
-  const handleClearSpecialtyFilter = () => {
-    setSpecialtyFilter(undefined);
+    router.push(`/doctors?specialty=${encodeURIComponent(specialty)}`);
   };
 
   const handleOpenAuth = (mode: 'signin' | 'signup') => {
@@ -146,57 +150,43 @@ export default function Home() {
     setAuthError(null);
   };
 
-  const handleAuthSubmit = (e: React.FormEvent) => {
+  const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!emailInput || !passwordInput) return;
 
     setAuthLoading(true);
     setAuthError(null);
 
-    // Simulate database latency
-    setTimeout(() => {
-      const usersStr = localStorage.getItem('aegis_users');
-      const users = usersStr ? JSON.parse(usersStr) : [];
+    try {
+      const endpoint = authMode === 'signup' ? '/api/auth/signup' : '/api/auth/signin';
+      const body = authMode === 'signup'
+        ? { name: nameInput || 'User', email: emailInput, password: passwordInput }
+        : { email: emailInput, password: passwordInput };
 
-      if (authMode === 'signup') {
-        const userExists = users.some((u: any) => u.email.toLowerCase() === emailInput.toLowerCase());
-        
-        if (userExists) {
-          setAuthError('An account with this email address already exists.');
-          setAuthLoading(false);
-          return;
-        }
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
 
-        const newUser = {
-          name: nameInput || 'User',
-          email: emailInput,
-          password: passwordInput,
-        };
-        users.push(newUser);
-        localStorage.setItem('aegis_users', JSON.stringify(users));
+      const data = await res.json();
 
-        const sessionUser = { email: newUser.email, name: newUser.name };
-        setCurrentUser(sessionUser);
-        sessionStorage.setItem('userSession', JSON.stringify(sessionUser));
-        setIsAuthOpen(false);
-      } else {
-        const registeredUser = users.find(
-          (u: any) => u.email.toLowerCase() === emailInput.toLowerCase() && u.password === passwordInput
-        );
-
-        if (!registeredUser) {
-          setAuthError('Invalid email address or password. Please try again.');
-          setAuthLoading(false);
-          return;
-        }
-
-        const sessionUser = { email: registeredUser.email, name: registeredUser.name };
-        setCurrentUser(sessionUser);
-        sessionStorage.setItem('userSession', JSON.stringify(sessionUser));
-        setIsAuthOpen(false);
+      if (!res.ok) {
+        setAuthError(data.error || 'Authentication failed. Please try again.');
+        setAuthLoading(false);
+        return;
       }
+
+      const sessionUser = { email: data.user.email, name: data.user.name };
+      setCurrentUser(sessionUser);
+      sessionStorage.setItem('userSession', JSON.stringify(sessionUser));
+      setIsAuthOpen(false);
+    } catch (err: any) {
+      console.error('Auth error:', err);
+      setAuthError('An unexpected error occurred. Please try again later.');
+    } finally {
       setAuthLoading(false);
-    }, 800);
+    }
   };
 
   const handleLogOut = () => {
@@ -215,17 +205,27 @@ export default function Home() {
         <div className={styles.logo}>
           <span className={styles.logoIcon}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '6px' }}>
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
           </span>
           Aegis Health
         </div>
-        
+
         {/* Right side navigation utilities */}
         <div className={styles.controls}>
+          <Link href="/doctors" className={styles.navLink}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px', display: 'inline-block', verticalAlign: 'middle' }}>
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            Find Doctors
+          </Link>
+
           {/* Icon-Only Theme Toggle */}
-          <button 
-            onClick={toggleTheme} 
+          <button
+            onClick={toggleTheme}
             className={styles.themeToggleIcon}
             aria-label="Toggle Theme"
             title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
@@ -264,14 +264,14 @@ export default function Home() {
             </div>
           ) : (
             <div className={styles.authButtons}>
-              <button 
-                onClick={() => handleOpenAuth('signin')} 
+              <button
+                onClick={() => handleOpenAuth('signin')}
                 className={styles.signinBtn}
               >
                 Sign In
               </button>
-              <button 
-                onClick={() => handleOpenAuth('signup')} 
+              <button
+                onClick={() => handleOpenAuth('signup')}
                 className={styles.signupBtn}
               >
                 Sign Up
@@ -283,7 +283,7 @@ export default function Home() {
 
       {/* Hero Banner */}
       <section className={styles.hero}>
-        <h1>AI-Powered Disease Prediction & Referral Scheduler</h1>
+        <h1>AI-Powered Disease Prediction &   Doctor Recommendation</h1>
         <p>
           Diagnose health symptoms instantly with our Naive Bayes Machine Learning model and connect with specialized local physicians for follow-up care.
         </p>
@@ -317,8 +317,8 @@ export default function Home() {
           >
             <span className={styles.tabIcon}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44 2.5 2.5 0 0 1 0-3.12 3 3 0 0 1 0-4.88 2.5 2.5 0 0 1 0-3.12A2.5 2.5 0 0 1 9.5 2z"/>
-                <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44 2.5 2.5 0 0 0 0-3.12 3 3 0 0 0 0-4.88 2.5 2.5 0 0 0 0-3.12A2.5 2.5 0 0 0 14.5 2z"/>
+                <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44 2.5 2.5 0 0 1 0-3.12 3 3 0 0 1 0-4.88 2.5 2.5 0 0 1 0-3.12A2.5 2.5 0 0 1 9.5 2z" />
+                <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44 2.5 2.5 0 0 0 0-3.12 3 3 0 0 0 0-4.88 2.5 2.5 0 0 0 0-3.12A2.5 2.5 0 0 0 14.5 2z" />
               </svg>
             </span>
             Symptom Matrix Selector
@@ -329,7 +329,7 @@ export default function Home() {
           >
             <span className={styles.tabIcon}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
             </span>
             Conversational AI Health Advisor
@@ -340,11 +340,11 @@ export default function Home() {
           >
             <span className={styles.tabIcon}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-                <polyline points="10 9 9 9 8 9"/>
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10 9 9 9 8 9" />
               </svg>
             </span>
             Prescription OCR Analyzer
@@ -370,10 +370,10 @@ export default function Home() {
           <div className={styles.appointmentsHeader}>
             <div className={styles.appointmentsTitle}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px', verticalAlign: 'middle', display: 'inline-block', color: 'var(--primary-color)' }}>
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                <line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8" y1="2" x2="8" y2="6"/>
-                <line x1="3" y1="10" x2="21" y2="10"/>
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
               </svg>
               <h2>Your Scheduled Consultations</h2>
             </div>
@@ -387,8 +387,8 @@ export default function Home() {
                     <h3>{app.docName}</h3>
                     <span className={styles.appointmentSpecialty}>{app.specialty}</span>
                   </div>
-                  <button 
-                    onClick={() => handleCancelAppointment(app.id)} 
+                  <button
+                    onClick={() => handleCancelAppointment(app.id)}
                     className={styles.cancelAppBtn}
                     title="Cancel Appointment"
                   >
@@ -415,15 +415,6 @@ export default function Home() {
         </section>
       )}
 
-      {/* Doctor directory section */}
-      <section ref={doctorSectionRef} className="glass-card" style={{ padding: '32px' }}>
-        <DoctorList
-          filteredSpecialty={specialtyFilter}
-          onClearSpecialtyFilter={handleClearSpecialtyFilter}
-          currentUser={currentUser}
-          onAppointmentBooked={() => loadAppointments()}
-        />
-      </section>
 
       {/* FAQs Section */}
       <section className={styles.faqSection}>
@@ -437,15 +428,15 @@ export default function Home() {
             const isOpen = expandedFaqId === faq.id;
             return (
               <div key={faq.id} className={`${styles.faqCard} ${isOpen ? styles.faqCardOpen : ''}`}>
-                <button 
-                  onClick={() => toggleFaq(faq.id)} 
+                <button
+                  onClick={() => toggleFaq(faq.id)}
                   className={styles.faqQuestionRow}
                   aria-expanded={isOpen}
                 >
                   <span className={styles.faqQuestion}>{faq.question}</span>
                   <span className={`${styles.faqIcon} ${isOpen ? styles.faqIconOpen : ''}`}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="6 9 12 15 18 9"/>
+                      <polyline points="6 9 12 15 18 9" />
                     </svg>
                   </span>
                 </button>
@@ -465,16 +456,16 @@ export default function Home() {
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
             <button onClick={handleCloseAuth} className={styles.closeBtn}>×</button>
-            
+
             <div className={styles.authTabs}>
-              <button 
-                onClick={() => { setAuthMode('signin'); setAuthError(null); }} 
+              <button
+                onClick={() => { setAuthMode('signin'); setAuthError(null); }}
                 className={`${styles.authTabButton} ${authMode === 'signin' ? styles.activeAuthTabButton : ''}`}
               >
                 Sign In
               </button>
-              <button 
-                onClick={() => { setAuthMode('signup'); setAuthError(null); }} 
+              <button
+                onClick={() => { setAuthMode('signup'); setAuthError(null); }}
                 className={`${styles.authTabButton} ${authMode === 'signup' ? styles.activeAuthTabButton : ''}`}
               >
                 Sign Up
@@ -484,9 +475,9 @@ export default function Home() {
             {authError && (
               <div className={styles.authErrorMsg} role="alert">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px', verticalAlign: 'middle', display: 'inline-block', flexShrink: 0 }}>
-                  <circle cx="12" cy="12" r="10"/>
-                  <line x1="12" y1="8" x2="12" y2="12"/>
-                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
                 </svg>
                 <span>{authError}</span>
               </div>
@@ -531,9 +522,9 @@ export default function Home() {
                 />
               </div>
 
-              <button 
-                type="submit" 
-                disabled={authLoading} 
+              <button
+                type="submit"
+                disabled={authLoading}
                 className={styles.authSubmitBtn}
               >
                 {authLoading ? 'Verifying Account...' : (authMode === 'signin' ? 'Sign In' : 'Create Account')}

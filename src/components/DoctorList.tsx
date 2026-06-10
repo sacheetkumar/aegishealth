@@ -77,14 +77,13 @@ export default function DoctorList({
     setBookingConfirmed(false);
   };
 
-  const handleConfirmBooking = (e: React.FormEvent) => {
+  const handleConfirmBooking = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!bookingDoc || !bookingSlot || !patientName.trim() || !patientPhone.trim() || !appointmentDate) return;
 
     setIsSubmitting(true);
     
-    // Simulate API request delay
-    setTimeout(() => {
+    try {
       const newApp = {
         id: Date.now().toString(),
         docName: bookingDoc.name,
@@ -98,18 +97,27 @@ export default function DoctorList({
         userEmail: currentUser?.email || 'guest'
       };
 
-      const allAppsStr = localStorage.getItem('aegis_appointments');
-      const allApps = allAppsStr ? JSON.parse(allAppsStr) : [];
-      allApps.push(newApp);
-      localStorage.setItem('aegis_appointments', JSON.stringify(allApps));
+      const res = await fetch('/api/appointments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newApp),
+      });
 
-      setIsSubmitting(false);
+      if (!res.ok) {
+        throw new Error('Failed to book appointment');
+      }
+
       setBookingConfirmed(true);
 
       if (onAppointmentBooked) {
         onAppointmentBooked();
       }
-    }, 1000);
+    } catch (err) {
+      console.error('Booking error:', err);
+      alert('Failed to schedule consultation. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
