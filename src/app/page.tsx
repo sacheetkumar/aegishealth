@@ -428,7 +428,10 @@ export default function Home() {
             <ChatAssistant onRecommendDoctors={handleRecommendDoctors} />
           )}
           {activeTab === 'prescription' && (
-            <PrescriptionUpload onRecommendDoctors={handleRecommendDoctors} />
+            <PrescriptionUpload 
+              onRecommendDoctors={handleRecommendDoctors} 
+              currentUser={currentUser}
+            />
           )}
         </div>
       </section>

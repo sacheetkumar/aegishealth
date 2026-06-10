@@ -21,3 +21,15 @@ CREATE TABLE IF NOT EXISTS appointments (
   user_email VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS prescriptions (
+  id SERIAL PRIMARY KEY,
+  user_email VARCHAR(255) NOT NULL,
+  file_name VARCHAR(255) NOT NULL,
+  condition VARCHAR(255) NOT NULL,
+  specialty VARCHAR(255) NOT NULL,
+  medications JSONB NOT NULL,
+  warnings TEXT,
+  precautions TEXT[],
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
