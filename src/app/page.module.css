@@ -231,56 +231,71 @@
 
 /* Tabs Panel */
 .tabsContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 32px;
   width: 100%;
+  align-items: start;
 }
 
 .tabsHeader {
   display: flex;
-  border-bottom: 1px solid var(--card-border);
-  padding-bottom: 1px;
-  gap: 32px;
+  flex-direction: column;
+  gap: 12px;
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .tabButton {
-  padding: 12px 4px;
-  font-weight: 500;
+  padding: 14px 20px;
+  font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
   color: var(--fg-color);
-  opacity: 0.5;
+  opacity: 0.7;
   transition: all var(--transition-fast);
   position: relative;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  text-align: left;
+  width: 100%;
 }
 
 .tabButton:hover {
-  opacity: 0.8;
+  opacity: 1;
+  border-color: var(--primary-color);
+  background: var(--input-bg);
 }
 
 .tabIcon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .activeTabButton {
   opacity: 1 !important;
   color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+  background: var(--input-bg) !important;
+  box-shadow: 0 0 15px var(--primary-glow);
 }
 
 .activeTabButton::after {
   content: '';
   position: absolute;
-  bottom: -1px;
   left: 0;
-  right: 0;
-  height: 2px;
+  top: 10%;
+  bottom: 10%;
+  width: 4px;
+  height: 80%;
   background-color: var(--primary-color);
+  border-radius: 4px;
 }
 
 .tabContent {
@@ -699,23 +714,27 @@
     gap: 12px;
   }
 
+  .tabsContainer {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
   .tabsHeader {
     flex-direction: column;
-    gap: 0;
-    border-bottom: none;
+    gap: 8px;
   }
 
   .tabButton {
-    text-align: left;
-    padding: 12px 0;
+    padding: 12px 16px;
     border-bottom: 1px solid var(--card-border);
   }
 
   .activeTabButton::after {
-    bottom: -1px;
     left: 0;
-    width: 100%;
-    right: auto;
+    top: 10%;
+    bottom: 10%;
+    width: 4px;
+    height: 80%;
   }
   
   .userNameText {
