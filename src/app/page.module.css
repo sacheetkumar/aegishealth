@@ -897,3 +897,120 @@
   opacity: 1;
   text-decoration: underline;
 }
+
+/* Top contact & social bar matching DoctorOnCall */
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 32px;
+  background: var(--input-bg);
+  border-bottom: 1px solid var(--card-border);
+  font-size: 0.8rem;
+  color: var(--fg-color);
+  opacity: 0.85;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.topContactInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.topContactItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: inherit;
+  transition: color var(--transition-fast);
+}
+
+.topContactItem:hover {
+  color: var(--primary-color);
+}
+
+.topSocials {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.topSocialLink {
+  color: inherit;
+  opacity: 0.7;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.topSocialLink:hover {
+  color: var(--primary-color);
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .topBar {
+    display: none;
+  }
+}
+
+/* Doctors Hero Banner matching DoctorOnCall */
+.doctorsHero {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.95), rgba(15, 23, 42, 0.98));
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 24px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.doctorsHeroOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(30, 58, 138, 0.15);
+}
+
+.doctorsHeroContent {
+  position: relative;
+  z-index: 1;
+  padding: 24px;
+}
+
+.doctorsHeroContent h1 {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.doctorsHeroDivider {
+  width: 60px;
+  height: 3px;
+  background: var(--primary-color);
+  margin: 0 auto 12px auto;
+  border-radius: 2px;
+}
+
+.doctorsHeroContent p {
+  font-size: 1rem;
+  color: #ffffff;
+  opacity: 0.85;
+}

@@ -1,85 +1,158 @@
-.container {
+/* Two-column Directory Layout matching DoctorOnCall */
+.mainContainer {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .mainContainer {
+    grid-template-columns: 280px 1fr;
+  }
+}
+
+/* Sidebar Filters styling */
+.sidebarFilters {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.titleSection h2 {
-  font-size: 1.8rem;
-  font-weight: 400;
+.sidebarHeader h3 {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 600;
   color: var(--fg-color);
-  margin-bottom: 6px;
+  margin-bottom: 2px;
 }
 
-.titleSection p {
-  color: var(--fg-color);
-  opacity: 0.65;
-  font-size: 0.95rem;
-  line-height: 1.5;
+.sidebarHeader p {
+  font-size: 0.75rem;
+  opacity: 0.5;
+  margin: 0;
 }
 
-/* Filters */
-.filterRow {
+.filterGroup {
   display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.filterLabel {
-  font-size: 0.85rem;
-  font-weight: 500;
+.filterGroup label {
+  font-size: 0.8rem;
+  font-weight: 600;
   opacity: 0.7;
 }
 
-.select {
-  padding: 8px 12px;
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 12px;
+  color: var(--fg-color);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.filterGroup input {
+  width: 100%;
+  padding: 10px 12px 10px 34px;
   background: var(--input-bg);
   border: 1px solid var(--input-border);
   border-radius: var(--radius-sm);
   color: var(--fg-color);
-  font-weight: 500;
   font-size: 0.85rem;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast);
+}
+
+.filterGroup input:focus {
+  border-color: var(--primary-color);
+}
+
+.filterGroup select {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  color: var(--fg-color);
+  font-size: 0.85rem;
+  box-sizing: border-box;
   cursor: pointer;
   transition: border-color var(--transition-fast);
 }
 
-.select:focus {
+.filterGroup select:focus {
   border-color: var(--primary-color);
 }
 
-.clearFilterBtn {
+.resetBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: 0.8rem;
   color: var(--danger-color);
   cursor: pointer;
   background: none;
-  border: none;
-  padding: 6px 10px;
   border: 1px solid var(--input-border);
   border-radius: var(--radius-sm);
+  padding: 10px;
+  font-weight: 500;
   transition: all var(--transition-fast);
 }
 
-.clearFilterBtn:hover {
+.resetBtn:hover {
   background: var(--primary-glow);
   border-color: var(--danger-color);
 }
 
-/* Grid of doctors */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+/* Content Panel styling */
+.contentCol {
+  display: flex;
+  flex-direction: column;
   gap: 20px;
 }
 
+.contentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--card-border);
+  padding-bottom: 12px;
+}
+
+.contentHeader h2 {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--fg-color);
+  margin: 0;
+}
+
+.resultsCount {
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+
+/* 3-column grid matching HealthBooker */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* Doctor card design details */
 .docCard {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -94,9 +167,14 @@
 }
 
 .docCard:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   border-color: var(--primary-color);
   box-shadow: var(--shadow-md);
+}
+
+.matchedDocCard {
+  border-color: var(--primary-color);
+  background: linear-gradient(180deg, var(--card-bg), var(--primary-glow));
 }
 
 .recommendedBadge {
@@ -106,23 +184,24 @@
   background: var(--primary-glow);
   border: 1px solid var(--primary-color);
   color: var(--primary-color);
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 600;
   padding: 2px 8px;
   border-radius: var(--radius-sm);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  z-index: 2;
 }
 
-.docProfile {
+.docHeader {
   display: flex;
-  gap: 16px;
+  gap: 14px;
   align-items: center;
 }
 
 .avatar {
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: var(--primary-glow);
   border: 1px solid var(--primary-color);
@@ -130,70 +209,122 @@
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--primary-color);
+  flex-shrink: 0;
 }
 
-.docInfo h3 {
-  font-size: 1.1rem;
-  font-weight: 500;
-  margin-bottom: 2px;
-}
-
-.docSpecialty {
-  font-size: 0.8rem;
-  color: var(--primary-color);
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-
-.ratingRow {
+.docNameBox {
   display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.docNameBox h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--fg-color);
+  display: inline-flex;
   align-items: center;
+  gap: 4px;
+}
+
+.verifiedTick {
+  color: #10B981; /* Green verification marker */
+  display: inline-flex;
+  align-items: center;
+}
+
+.specialtyBadge {
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+/* Card body details list */
+.docBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-grow: 1;
+}
+
+.ratingStars {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--fg-color);
+  opacity: 0.85;
+}
+
+.ratingStars svg {
+  color: #F59E0B; /* Amber Star */
+}
+
+.detailsList {
+  display: flex;
+  flex-direction: column;
   gap: 6px;
+  background: var(--input-bg);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--card-border);
+}
+
+.detailItem {
+  display: flex;
+  justify-content: space-between;
   font-size: 0.8rem;
 }
 
-.stars {
-  color: #d97706; /* Refined Gold */
-}
-
-.experience {
+.detailLabel {
   opacity: 0.55;
 }
 
-.clinicDetails {
-  font-size: 0.85rem;
-  opacity: 0.85;
+.detailVal {
+  font-weight: 500;
+  color: var(--fg-color);
+}
+
+/* Clinic & Locations styling */
+.locationBlock {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--card-border);
-}
-
-.clinicName {
-  font-weight: 500;
-}
-
-.clinicLoc {
-  opacity: 0.55;
   font-size: 0.8rem;
+  opacity: 0.75;
 }
 
-/* Slots */
-.slotsSection {
+.locationLine {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.locationLine svg {
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+/* Available Slots Block */
+.slotsBlock {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  border-top: 1px dashed var(--card-border);
+  padding-top: 12px;
 }
 
 .slotsTitle {
   font-size: 0.75rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  opacity: 0.5;
-  font-weight: 600;
+  opacity: 0.55;
 }
 
 .slotsGrid {
@@ -220,7 +351,29 @@
   background: var(--primary-glow);
 }
 
-/* Booking Modal */
+/* Empty/No Results layout */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  border: 1px dashed var(--card-border);
+  border-radius: var(--radius-md);
+  text-align: center;
+  opacity: 0.6;
+}
+
+.emptyState svg {
+  margin-bottom: 12px;
+}
+
+.emptyState p {
+  font-size: 0.9rem;
+  max-width: 300px;
+}
+
+/* Booking Modal styling */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -245,16 +398,23 @@
   box-shadow: var(--shadow-lg);
   position: relative;
   animation: fadeIn var(--transition-fast) forwards;
+  box-sizing: border-box;
 }
 
 .closeBtn {
   position: absolute;
   top: 16px;
   right: 16px;
-  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: var(--fg-color);
   cursor: pointer;
   opacity: 0.5;
   transition: opacity var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
 }
 
 .closeBtn:hover {
@@ -263,49 +423,27 @@
 
 .modalHeader {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .modalHeader h2 {
+  font-family: var(--font-heading);
   font-size: 1.4rem;
-  font-weight: 400;
-  margin-bottom: 6px;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+  color: var(--fg-color);
 }
 
 .modalHeader p {
   font-size: 0.85rem;
   opacity: 0.6;
+  margin: 0;
 }
 
 .modalBody {
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-
-.inputGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.inputGroup label {
-  font-size: 0.8rem;
-  font-weight: 500;
-  opacity: 0.7;
-}
-
-.inputGroup input {
-  padding: 10px 14px;
-  background: var(--input-bg);
-  border: 1px solid var(--input-border);
-  border-radius: var(--radius-sm);
-  color: var(--fg-color);
-  font-size: 0.85rem;
-}
-
-.inputGroup input:focus {
-  border-color: var(--primary-color);
 }
 
 .bookingSummary {
@@ -316,7 +454,7 @@
   font-size: 0.85rem;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .summaryRow {
@@ -324,19 +462,41 @@
   justify-content: space-between;
 }
 
-.summaryRow span:first-child {
-  opacity: 0.5;
+.summaryRow span {
+  opacity: 0.55;
 }
 
-.summaryRow span:last-child {
-  font-weight: 500;
+.summaryRow strong {
+  font-weight: 600;
+  color: var(--fg-color);
 }
 
-.modalFooter {
-  margin-top: 24px;
+.inputGroup {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
+}
+
+.inputGroup label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.inputGroup input {
+  padding: 10px 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  color: var(--fg-color);
+  font-size: 0.85rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.inputGroup input:focus {
+  border-color: var(--primary-color);
+  outline: none;
 }
 
 .confirmBtn {
@@ -345,8 +505,10 @@
   color: var(--bg-color);
   font-weight: 600;
   border-radius: var(--radius-sm);
+  border: none;
   cursor: pointer;
   text-align: center;
+  font-size: 0.9rem;
   transition: all var(--transition-fast);
 }
 
@@ -354,46 +516,48 @@
   background: var(--primary-hover);
 }
 
-/* Success Animation inside Modal */
+/* Success layout inside Booking Dialog */
 .successContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px 0;
+  padding: 10px 0;
   text-align: center;
 }
 
 .successCircle {
-  width: 60px;
-  height: 60px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   background: var(--primary-glow);
   border: 1px solid var(--success-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
   color: var(--success-color);
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .successText h3 {
-  font-size: 1.35rem;
-  font-weight: 400;
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0 0 6px 0;
   color: var(--fg-color);
-  margin-bottom: 6px;
 }
 
 .successText p {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   opacity: 0.7;
   line-height: 1.5;
+  margin: 0;
 }
 
 .doneBtn {
-  margin-top: 24px;
+  margin-top: 20px;
   padding: 10px 24px;
+  background: none;
   border: 1px solid var(--primary-color);
   border-radius: var(--radius-sm);
   color: var(--primary-color);
