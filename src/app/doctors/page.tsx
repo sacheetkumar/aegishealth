@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import styles from '../page.module.css'; // Reuse home page styles
 import DoctorList from '@/components/DoctorList';
+import DirectBookingModal from '@/components/DirectBookingModal';
 
 function DoctorsContent() {
   const searchParams = useSearchParams();
@@ -12,6 +13,7 @@ function DoctorsContent() {
 
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [currentUser, setCurrentUser] = useState<{ email: string; name: string } | null>(null);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
   
   // Auth Form Fields
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -125,6 +127,16 @@ function DoctorsContent() {
             </svg>
             Dashboard Home
           </Link>
+
+          <button onClick={() => setIsBookingOpen(true)} className={styles.signupBtn} style={{ fontSize: '0.85rem', padding: '8px 14px', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            Book Appointment
+          </button>
 
           {/* Icon-Only Theme Toggle */}
           <button
@@ -274,6 +286,12 @@ function DoctorsContent() {
           </div>
         </div>
       )}
+
+      <DirectBookingModal
+        isOpen={isBookingOpen}
+        onClose={() => setIsBookingOpen(false)}
+        currentUser={currentUser}
+      />
 
       {/* Footer */}
       <footer className={styles.footer}>

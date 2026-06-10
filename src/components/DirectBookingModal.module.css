@@ -1,0 +1,259 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 2100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInModal 0.2s ease-out;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modalContent {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  width: 90%;
+  max-width: 460px;
+  border-radius: var(--radius-md);
+  padding: 24px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideInModal 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+@keyframes slideInModal {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.closeBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 1.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  opacity: 0.5;
+  color: var(--fg-color);
+  transition: opacity var(--transition-fast);
+}
+
+.closeBtn:hover {
+  opacity: 1;
+}
+
+.modalHeader {
+  margin-bottom: 20px;
+  padding-right: 24px;
+}
+
+.modalHeader h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--fg-color);
+  margin-bottom: 4px;
+}
+
+.modalHeader p {
+  font-size: 0.85rem;
+  opacity: 0.6;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inputGroup label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.select, .input {
+  padding: 10px 14px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  color: var(--fg-color);
+  font-size: 0.85rem;
+  width: 100%;
+}
+
+.select:focus, .input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+.slotsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.slotsTitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.slotsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.slotBtn {
+  padding: 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  color: var(--fg-color);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.slotBtn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  background: var(--input-bg);
+}
+
+.activeSlotBtn {
+  border-color: var(--primary-color) !important;
+  color: var(--bg-color) !important;
+  background: var(--primary-color) !important;
+  font-weight: 600;
+}
+
+.confirmBtn {
+  margin-top: 10px;
+  padding: 12px;
+  background: var(--primary-color);
+  color: var(--bg-color);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.confirmBtn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.confirmBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Success State Styles */
+.successContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px 0 10px 0;
+  gap: 16px;
+}
+
+.successCircle {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.15);
+  border: 2px solid var(--success-color);
+  color: var(--success-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.successText h3 {
+  font-size: 1.3rem;
+  color: var(--fg-color);
+  margin-bottom: 6px;
+}
+
+.successText p {
+  font-size: 0.9rem;
+  opacity: 0.7;
+  line-height: 1.5;
+}
+
+.bookingSummary {
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+
+.summaryRow span:first-child {
+  opacity: 0.6;
+}
+
+.summaryRow span:last-child {
+  font-weight: 600;
+}
+
+.doneBtn {
+  padding: 10px 20px;
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  color: var(--fg-color);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-top: 10px;
+  width: 100%;
+}
+
+.doneBtn:hover {
+  border-color: var(--fg-color);
+}
+
+@media (max-width: 480px) {
+  .slotsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
