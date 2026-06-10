@@ -104,7 +104,8 @@ export default function DoctorList({
       });
 
       if (!res.ok) {
-        throw new Error('Failed to book appointment');
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to book appointment');
       }
 
       setBookingConfirmed(true);
@@ -112,9 +113,9 @@ export default function DoctorList({
       if (onAppointmentBooked) {
         onAppointmentBooked();
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Booking error:', err);
-      alert('Failed to schedule consultation. Please try again.');
+      alert(`Failed to schedule consultation: ${err.message || 'Please try again.'}`);
     } finally {
       setIsSubmitting(false);
     }
